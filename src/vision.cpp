@@ -62,7 +62,7 @@ rclcpp::node_interfaces::NodeBaseInterface::SharedPtr Vision::getNodeBaseInterfa
 
 bool Vision::configure()
 {
-  node_->declare_parameter<std::string>(STREAM_CONFIG_PARAM);
+  node_->declare_parameter<std::string>(STREAM_CONFIG_PARAM, "");
   if (!node_->get_parameter<std::string>(STREAM_CONFIG_PARAM, camera_config_))
   {
     RCLCPP_FATAL(node_->get_logger(), "'%s' rosparam is not set. This is needed to set up a gstreamer pipeline.",
@@ -75,7 +75,7 @@ bool Vision::configure()
   }
 
   std::string camera_type;
-  node_->declare_parameter<std::string>(CAMERA_TYPE_PARAM);
+  node_->declare_parameter<std::string>(CAMERA_TYPE_PARAM, "");
   if (!node_->get_parameter<std::string>(CAMERA_TYPE_PARAM, camera_type))
   {
     RCLCPP_FATAL(node_->get_logger(), "'%s' rosparam is not set. This param is required for this node to run! Exiting.",
@@ -104,7 +104,7 @@ bool Vision::configure()
   pixel_size_ = sensor_msgs::image_encodings::numChannels(image_encoding_) *
                 (sensor_msgs::image_encodings::bitDepth(image_encoding_) / 8);
 
-  node_->declare_parameter<std::string>(CAMERA_NAME_PARAM);
+  node_->declare_parameter<std::string>(CAMERA_NAME_PARAM, "");
   if (node_->get_parameter<std::string>(CAMERA_NAME_PARAM, camera_name_))
   {
     camera_info_manager_->setCameraName(camera_name_);
@@ -117,7 +117,7 @@ bool Vision::configure()
     camera_info_manager_->setCameraName(camera_name_);
   }
 
-  node_->declare_parameter<std::string>(FRAME_ID_PARAM);
+  node_->declare_parameter<std::string>(FRAME_ID_PARAM, "");
   if (!node_->get_parameter<std::string>(FRAME_ID_PARAM, frame_id_))
   {
     frame_id_ = "/camera_frame";
@@ -125,7 +125,7 @@ bool Vision::configure()
     node_->set_parameter(rclcpp::Parameter(FRAME_ID_PARAM, frame_id_));
   }
 
-  node_->declare_parameter<double>(MAX_PUB_RATE_PARAM);
+  node_->declare_parameter<double>(MAX_PUB_RATE_PARAM, 0.0);
   if (!node_->get_parameter<double>(MAX_PUB_RATE_PARAM, max_pub_rate_hz_))
   {
     max_pub_rate_hz_ = 30.0;
@@ -306,7 +306,7 @@ bool Vision::loadCameraInfo()
    * The user can specify a custom camera information file when launching the nodelet.
    * Otherwise, a default information file is selected based on the sensor resolution.
    */
-  node_->declare_parameter<std::string>(CAMERA_INFO_URL_USER_PARAM);
+  node_->declare_parameter<std::string>(CAMERA_INFO_URL_USER_PARAM, "");
   node_->get_parameter<std::string>(CAMERA_INFO_URL_USER_PARAM, camera_info_);
   if (camera_info_.empty())
   {
@@ -314,7 +314,7 @@ bool Vision::loadCameraInfo()
                 "[%s]: Custom camera information file not set, using default one based on sensor resolution",
                 camera_name_.c_str());
 
-    node_->declare_parameter<std::string>(CAMERA_INFO_URL_DEFAULT_PARAM);
+    node_->declare_parameter<std::string>(CAMERA_INFO_URL_DEFAULT_PARAM, "");
     node_->get_parameter<std::string>(CAMERA_INFO_URL_DEFAULT_PARAM, cam_info_default);
     if (!cam_info_default.empty())
     {
